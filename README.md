@@ -1,5 +1,9 @@
 # TutorDesk
 
+[![CI](https://github.com/peals-pline/TutorDesk/actions/workflows/ci.yml/badge.svg)](https://github.com/peals-pline/TutorDesk/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/peals-pline/TutorDesk)](https://github.com/peals-pline/TutorDesk/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 TutorDesk is a local-first open-source workspace for private tutors and small educators. It helps tutors track students, lessons, homework, recurring mistakes, learning progress, and simple Markdown progress reports without sending student data to third-party servers.
 
 > MVP status: functional local-first prototype with demo data, browser storage, import/export, and tests.
@@ -102,6 +106,10 @@ See [ROADMAP.md](ROADMAP.md) for the release plan.
 TutorDesk is early and intentionally small. Product feedback, accessibility improvements, UI polish, and local-first data ideas are welcome.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+## Maintainer workflow
+
+TutorDesk is maintained in public through [issues](https://github.com/peals-pline/TutorDesk/issues), focused pull requests, CI checks, and versioned [releases](https://github.com/peals-pline/TutorDesk/releases). Planned work is tracked in [ROADMAP.md](ROADMAP.md), and changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
