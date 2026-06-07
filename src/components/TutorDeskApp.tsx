@@ -103,7 +103,22 @@ export function TutorDeskApp() {
             </p>
           </div>
 
-          <nav className="mt-5 flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible">
+          <label className="mt-5 grid gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 lg:hidden">
+            Current view
+            <select
+              value={view}
+              onChange={(event) => setView(event.target.value as View)}
+              className="h-11 rounded-2xl border border-stone-200 bg-white px-3 text-sm font-semibold normal-case tracking-normal text-stone-800 shadow-sm outline-none focus:border-sage-300 focus:ring-2 focus:ring-sage-100"
+            >
+              {navItems.map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <nav className="mt-5 hidden gap-2 lg:grid">
             {navItems.map(([id, label, Icon]) => (
               <button
                 key={id}
@@ -145,20 +160,20 @@ export function TutorDeskApp() {
         </aside>
 
         <main className="flex-1 px-4 py-5 sm:px-6 lg:px-7 lg:py-7">
-          <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
+          <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0">
               <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{view === "dashboard" ? "Dashboard" : navItems.find(([id]) => id === view)?.[1]}</h1>
               <p className="mt-1 text-sm text-stone-500">
                 {view === "dashboard" ? "Overview of your teaching workspace" : "TutorDesk keeps this workspace local to your browser."}
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <label className="flex h-11 items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-500 shadow-sm">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center md:w-auto">
+              <label className="flex h-11 min-w-0 items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-500 shadow-sm sm:w-72">
                 <Search size={16} />
-                <input className="w-52 bg-transparent outline-none placeholder:text-stone-400" placeholder="Search students..." />
-                <span className="rounded-md border border-stone-200 px-1.5 py-0.5 text-xs">⌘K</span>
+                <input className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-stone-400" placeholder="Search students..." />
+                <span className="hidden rounded-md border border-stone-200 px-1.5 py-0.5 text-xs sm:inline">Ctrl K</span>
               </label>
-              <Button onClick={() => setView("students")} className="gap-2 rounded-xl">
+              <Button onClick={() => setView("students")} className="w-full gap-2 rounded-xl sm:w-auto">
                 <Plus size={16} />
                 Add student
               </Button>
