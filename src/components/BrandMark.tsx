@@ -1,0 +1,34 @@
+import { cn } from "@/lib/utils";
+
+export function BrandMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      role="img"
+      aria-label="TutorDesk"
+      className={cn("size-11", className)}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="16" fill="#4C6340" />
+      <path
+        d="M14.5 16.75C14.5 15.78 15.28 15 16.25 15H22.2C23.25 15 24.2 15.58 24.7 16.47C25.2 15.58 26.15 15 27.2 15H33.75C34.72 15 35.5 15.78 35.5 16.75V31.1C35.5 32.18 34.52 33 33.47 32.8L27.18 31.6C26.14 31.4 25.1 31.73 24.7 32.52C24.3 31.73 23.26 31.4 22.22 31.6L16.53 32.8C15.48 33 14.5 32.18 14.5 31.1V16.75Z"
+        stroke="#F7F4EA"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M24.7 17.1V32.35" stroke="#F7F4EA" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M29.25 20.2C31.05 20.2 32.15 21.2 32.15 22.65C32.15 24.58 30.5 25.35 28.2 25.35H27.1V20.2H29.25Z"
+        fill="#DDE8D7"
+      />
+      <path
+        d="M18.25 20.2H21.05M18.25 24H21.05M18.25 27.8H21.05"
+        stroke="#DDE8D7"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
