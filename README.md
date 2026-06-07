@@ -86,6 +86,8 @@ The current storage layer uses `localStorage` for MVP simplicity. The next stora
 
 ## Roadmap
 
+See [ROADMAP.md](ROADMAP.md) for the release plan.
+
 - [ ] IndexedDB storage adapter
 - [ ] Edit and delete controls for every record type
 - [ ] Search and filters across students and notes
