@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   CalendarDays,
@@ -35,6 +35,7 @@ import {
 import type { HomeworkStatus, ProgressStatus } from "@/domain/types";
 import { useTutorDesk } from "@/hooks/useTutorDesk";
 import { generateProgressReport, getMistakeFrequency } from "@/lib/report";
+import { filterStudents } from "@/lib/studentSearch";
 import { cn, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Field";
@@ -63,6 +64,8 @@ const progressLabels: Record<ProgressStatus, string> = {
 export function TutorDeskApp() {
   const [view, setView] = useState<View>("dashboard");
   const [copied, setCopied] = useState(false);
+  const [studentQuery, setStudentQuery] = useState("");
+  const studentSearchRef = useRef<HTMLInputElement>(null);
   const store = useTutorDesk();
   const { selectedStudent, scoped } = store;
 
@@ -71,6 +74,22 @@ export function TutorDeskApp() {
     : "";
 
   const mistakeFrequency = useMemo(() => getMistakeFrequency(scoped.mistakes), [scoped.mistakes]);
+  const filteredStudents = useMemo(
+    () => filterStudents(store.data.students, studentQuery),
+    [store.data.students, studentQuery],
+  );
+
+  useEffect(() => {
+    function focusStudentSearch(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLocaleLowerCase() === "k") {
+        event.preventDefault();
+        studentSearchRef.current?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", focusStudentSearch);
+    return () => window.removeEventListener("keydown", focusStudentSearch);
+  }, []);
 
   async function copyReport() {
     await navigator.clipboard.writeText(report);
@@ -168,11 +187,28 @@ export function TutorDeskApp() {
               </p>
             </div>
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center md:w-auto">
-              <label className="flex h-11 min-w-0 items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-500 shadow-sm sm:w-72">
+              <div className="flex h-11 min-w-0 items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-500 shadow-sm focus-within:border-sage-400 focus-within:ring-2 focus-within:ring-sage-100 sm:w-72">
                 <Search size={16} />
-                <input className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-stone-400" placeholder="Search students..." />
-                <span className="hidden rounded-md border border-stone-200 px-1.5 py-0.5 text-xs sm:inline">Ctrl K</span>
-              </label>
+                <input
+                  ref={studentSearchRef}
+                  aria-label="Search students"
+                  className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-stone-400"
+                  placeholder="Search students..."
+                  value={studentQuery}
+                  onChange={(event) => setStudentQuery(event.target.value)}
+                />
+                {studentQuery ? (
+                  <button
+                    type="button"
+                    className="rounded-md px-1.5 py-0.5 text-xs font-semibold text-stone-600 hover:bg-stone-100"
+                    onClick={() => setStudentQuery("")}
+                  >
+                    Clear
+                  </button>
+                ) : (
+                  <span className="hidden rounded-md border border-stone-200 px-1.5 py-0.5 text-xs sm:inline">Ctrl K</span>
+                )}
+              </div>
               <Button onClick={() => setView("students")} className="w-full gap-2 rounded-xl sm:w-auto">
                 <Plus size={16} />
                 Add student
@@ -183,7 +219,7 @@ export function TutorDeskApp() {
           {!selectedStudent ? (
             <EmptyWorkspace onAdd={() => setView("students")} />
           ) : view === "dashboard" ? (
-            <Dashboard store={store} onNavigate={setView} />
+            <Dashboard store={store} students={filteredStudents} studentQuery={studentQuery} onNavigate={setView} />
           ) : (
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
               <section className="space-y-6">
@@ -195,7 +231,7 @@ export function TutorDeskApp() {
                 {view === "reports" ? <ReportsPanel report={report} copied={copied} onCopy={copyReport} /> : null}
                 {view === "backup" ? <BackupPanel store={store} /> : null}
               </section>
-              <StudentSidebar store={store} />
+              <StudentSidebar store={store} students={filteredStudents} studentQuery={studentQuery} />
             </div>
           )}
         </main>
@@ -230,7 +266,17 @@ function Panel({ title, description, children }: { title: string; description: s
   );
 }
 
-function Dashboard({ store, onNavigate }: { store: Store; onNavigate: (view: View) => void }) {
+function Dashboard({
+  store,
+  students,
+  studentQuery,
+  onNavigate,
+}: {
+  store: Store;
+  students: Store["data"]["students"];
+  studentQuery: string;
+  onNavigate: (view: View) => void;
+}) {
   const { data, selectedStudent, selectedStudentId, setSelectedStudentId, scoped } = store;
   const reviewedHomework = data.homework.filter((item) => item.status === "reviewed").length;
   const topicsToReview = data.progress.filter((item) => item.status === "needs_review").length;
@@ -258,7 +304,7 @@ function Dashboard({ store, onNavigate }: { store: Store; onNavigate: (view: Vie
             <Button variant="secondary" className="rounded-xl px-3 py-1.5 text-xs" onClick={() => onNavigate("students")}>View all</Button>
           </div>
           <div className="space-y-2">
-            {data.students.map((student) => {
+            {students.map((student) => {
               const progress = data.progress.filter((item) => item.studentId === student.id);
               const mastered = progress.filter((item) => item.status === "mastered").length;
               const percent = Math.round((mastered / Math.max(1, progress.length)) * 100);
@@ -284,6 +330,12 @@ function Dashboard({ store, onNavigate }: { store: Store; onNavigate: (view: Vie
                 </button>
               );
             })}
+            {!students.length ? (
+              <div className="rounded-xl border border-dashed border-stone-200 px-4 py-6 text-center">
+                <p className="text-sm font-semibold text-stone-700">No students match “{studentQuery.trim()}”.</p>
+                <p className="mt-1 text-xs text-stone-500">Try a name, subject, level, or learning goal.</p>
+              </div>
+            ) : null}
           </div>
           <Button variant="secondary" className="mt-4 w-full rounded-xl" onClick={() => onNavigate("students")}>
             <Plus size={15} />
@@ -418,14 +470,22 @@ function Metric({ icon: Icon, label, value, helper, tone }: { icon: typeof Users
   );
 }
 
-function StudentSidebar({ store }: { store: Store }) {
-  const { data, selectedStudentId, setSelectedStudentId, selectedStudent, scoped } = store;
+function StudentSidebar({
+  store,
+  students,
+  studentQuery,
+}: {
+  store: Store;
+  students: Store["data"]["students"];
+  studentQuery: string;
+}) {
+  const { selectedStudentId, setSelectedStudentId, selectedStudent, scoped } = store;
   return (
     <aside className="space-y-4">
       <div className="rounded-[2rem] border border-stone-200 bg-white p-4 shadow-sm">
         <h2 className="font-bold">Students</h2>
         <div className="mt-3 space-y-2">
-          {data.students.map((student) => (
+          {students.map((student) => (
             <button
               key={student.id}
               onClick={() => setSelectedStudentId(student.id)}
@@ -438,6 +498,11 @@ function StudentSidebar({ store }: { store: Store }) {
               <span className="text-xs opacity-75">{student.subject} - {student.level}</span>
             </button>
           ))}
+          {!students.length ? (
+            <p className="rounded-xl border border-dashed border-stone-200 px-3 py-5 text-center text-sm text-stone-500">
+              No students match “{studentQuery.trim()}”.
+            </p>
+          ) : null}
         </div>
       </div>
       {selectedStudent ? (

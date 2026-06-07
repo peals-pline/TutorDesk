@@ -2,6 +2,13 @@
 
 All notable changes to TutorDesk will be documented in this file.
 
+## 0.1.2 - 2026-06-07
+
+- Added student search across names, subjects, levels, and learning goals.
+- Added clear and empty-result states for filtered student lists.
+- Added a working `Ctrl K` / `Cmd K` shortcut for the student search.
+- Added unit coverage for student search behavior.
+
 ## 0.1.1 - 2026-06-07
 
 - Polished mobile navigation with an accessible compact view selector.
