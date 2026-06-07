@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TutorDesk
 
-## Getting Started
+TutorDesk is a local-first open-source workspace for private tutors and small educators. It helps tutors track students, lessons, homework, recurring mistakes, learning progress, and simple Markdown progress reports without sending student data to third-party servers.
 
-First, run the development server:
+> MVP status: functional local-first prototype with demo data, browser storage, import/export, and tests.
+>
+> TutorDesk is usable as an MVP today and is still actively evolving. The next releases focus on storage durability, editing workflows, and report templates.
+
+## Screenshots
+
+![TutorDesk dashboard](docs/screenshots/dashboard.png)
+
+Mobile layout:
+
+![TutorDesk mobile layout](docs/screenshots/mobile.png)
+
+## Why TutorDesk
+
+Tutors often keep student progress across notebooks, chat messages, spreadsheets, and memory. TutorDesk gives them one calm workspace for the teaching loop:
+
+- who the student is
+- what happened in lessons
+- what homework was assigned
+- which mistakes repeat
+- what topics need review
+- what to tell the student or parent next
+
+The MVP is intentionally local-first. Student data stays in the browser unless the tutor exports a JSON backup.
+
+## Features
+
+- Student profiles with subject, level, goals, and notes
+- Lesson records with date, topic, summary, materials, and tutor notes
+- Homework tracking with assigned, submitted, reviewed, and missed states
+- Mistake journal for recurring issues, examples, corrections, and severity
+- Mistake frequency by topic
+- Topic progress states: not started, learning, needs review, mastered
+- Markdown progress report generation
+- Copy-to-clipboard report action
+- JSON export and import
+- Demo seed data
+- Responsive teacher-friendly interface
+
+## Tech Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- React Hook Form
+- Zod
+- localStorage for the MVP local-first layer
+- Vitest
+
+## Quick Start
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm test
+npm run build
+npm run qa:functional
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run qa:functional` expects the app to be running at `http://127.0.0.1:3000`. You can override this with `TUTORDESK_URL`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Data Model
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+TutorDesk stores a single local JSON document:
 
-## Learn More
+- `students`
+- `lessons`
+- `homework`
+- `mistakes`
+- `progress`
 
-To learn more about Next.js, take a look at the following resources:
+The current storage layer uses `localStorage` for MVP simplicity. The next storage milestone is IndexedDB for larger workspaces and safer backup flows.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [ ] IndexedDB storage adapter
+- [ ] Edit and delete controls for every record type
+- [ ] Search and filters across students and notes
+- [ ] Report templates
+- [ ] Screenshot-backed README
+- [ ] Import validation preview before applying a backup
+- [ ] Optional Playwright smoke tests
+- [ ] Offline/PWA support
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+TutorDesk is early and intentionally small. Product feedback, accessibility improvements, UI polish, and local-first data ideas are welcome.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
