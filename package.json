@@ -1,6 +1,6 @@
 {
   "name": "tutordesk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "description": "Local-first workspace for tutors to track students, lessons, homework, mistakes, and progress.",
   "scripts": {
