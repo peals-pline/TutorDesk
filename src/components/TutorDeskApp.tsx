@@ -38,7 +38,7 @@ import { generateProgressReport, getMistakeFrequency } from "@/lib/report";
 import { filterStudents } from "@/lib/studentSearch";
 import { cn, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import { Input, Textarea } from "@/components/ui/Field";
+import { Input, Select, Textarea } from "@/components/ui/Field";
 import { BrandMark } from "@/components/BrandMark";
 
 const navItems = [
@@ -611,12 +611,9 @@ function HomeworkPanel({ studentId, store }: { studentId: string; store: Store }
       >
         <Input label="Title" {...form.register("title")} error={form.formState.errors.title?.message} placeholder="Write one paragraph" />
         <Input label="Due date" type="date" {...form.register("dueDate")} error={form.formState.errors.dueDate?.message} />
-        <label className="grid gap-1.5 text-sm font-medium text-stone-700">
-          Status
-          <select className="rounded-2xl border border-stone-200 bg-white px-3 py-2 text-sm shadow-sm" {...form.register("status")}>
-            {["assigned", "submitted", "reviewed", "missed"].map((status) => <option key={status}>{status}</option>)}
-          </select>
-        </label>
+        <Select label="Status" {...form.register("status")}>
+          {["assigned", "submitted", "reviewed", "missed"].map((status) => <option key={status}>{status}</option>)}
+        </Select>
         <Input label="Notes" {...form.register("notes")} error={form.formState.errors.notes?.message} placeholder="What should you check?" />
         <div className="md:col-span-2">
           <Button type="submit">Assign homework</Button>
@@ -645,12 +642,9 @@ function MistakesPanel({ studentId, store, mistakeFrequency }: { studentId: stri
         <Input label="Mistake type" {...form.register("type")} error={form.formState.errors.type?.message} placeholder="tense choice" />
         <Input label="Example" {...form.register("example")} error={form.formState.errors.example?.message} placeholder="Original mistake" />
         <Input label="Correction" {...form.register("correction")} error={form.formState.errors.correction?.message} placeholder="Correct version" />
-        <label className="grid gap-1.5 text-sm font-medium text-stone-700">
-          Severity
-          <select className="rounded-2xl border border-stone-200 bg-white px-3 py-2 text-sm shadow-sm" {...form.register("severity")}>
-            {["low", "medium", "high"].map((severity) => <option key={severity}>{severity}</option>)}
-          </select>
-        </label>
+        <Select label="Severity" {...form.register("severity")}>
+          {["low", "medium", "high"].map((severity) => <option key={severity}>{severity}</option>)}
+        </Select>
         <div className="flex items-end">
           <Button type="submit">Add mistake</Button>
         </div>
@@ -685,12 +679,9 @@ function ProgressPanel({ studentId, store }: { studentId: string; store: Store }
         })}
       >
         <Input label="Topic" {...form.register("topic")} error={form.formState.errors.topic?.message} placeholder="Linear equations" />
-        <label className="grid gap-1.5 text-sm font-medium text-stone-700">
-          Status
-          <select className="rounded-2xl border border-stone-200 bg-white px-3 py-2 text-sm shadow-sm" {...form.register("status")}>
-            {Object.entries(progressLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select>
-        </label>
+        <Select label="Status" {...form.register("status")}>
+          {Object.entries(progressLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </Select>
         <Input label="Notes" {...form.register("notes")} error={form.formState.errors.notes?.message} placeholder="What should happen next?" />
         <div className="md:col-span-3">
           <Button type="submit">Add topic progress</Button>
