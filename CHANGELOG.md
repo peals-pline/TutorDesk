@@ -2,6 +2,12 @@
 
 All notable changes to TutorDesk will be documented in this file.
 
+## 0.1.3 - 2026-06-08
+
+- Associated form labels, controls, and validation messages for assistive technology.
+- Added consistent invalid and keyboard focus states across inputs, textareas, and selects.
+- Added focused accessibility regression tests for shared form fields.
+
 ## 0.1.2 - 2026-06-07
 
 - Added student search across names, subjects, levels, and learning goals.
