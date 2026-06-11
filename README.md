@@ -39,7 +39,7 @@ The MVP is intentionally local-first. Student data stays in the browser unless t
 - Mistake journal for recurring issues, examples, corrections, and severity
 - Mistake frequency by topic
 - Topic progress states: not started, learning, needs review, mastered
-- Markdown progress report generation
+- Concise and detailed Markdown progress report templates
 - Copy-to-clipboard report action
 - JSON export and import
 - Demo seed data
@@ -95,7 +95,7 @@ See [ROADMAP.md](ROADMAP.md) for the release plan.
 - [ ] IndexedDB storage adapter
 - [ ] Edit and delete controls for every record type
 - [ ] Search and filters across students and notes
-- [ ] Report templates
+- [x] Concise and detailed report templates
 - [ ] Screenshot-backed README
 - [ ] Import validation preview before applying a backup
 - [ ] Optional Playwright smoke tests

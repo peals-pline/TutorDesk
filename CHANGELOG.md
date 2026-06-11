@@ -2,6 +2,18 @@
 
 All notable changes to TutorDesk will be documented in this file.
 
+## 0.1.4 - 2026-06-11
+
+### Added
+
+- Added concise and detailed Markdown progress report templates.
+- Added an accessible template switcher with audience-specific guidance.
+
+### Fixed
+
+- Fixed corrupted dash characters in generated Markdown reports.
+- Fixed long report lines overflowing instead of wrapping in the preview.
+
 ## 0.1.3 - 2026-06-08
 
 - Associated form labels, controls, and validation messages for assistive technology.

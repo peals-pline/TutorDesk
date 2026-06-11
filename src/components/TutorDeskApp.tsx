@@ -34,7 +34,7 @@ import {
 } from "@/domain/schemas";
 import type { HomeworkStatus, ProgressStatus } from "@/domain/types";
 import { useTutorDesk } from "@/hooks/useTutorDesk";
-import { generateProgressReport, getMistakeFrequency } from "@/lib/report";
+import { generateProgressReport, getMistakeFrequency, type ReportTemplate } from "@/lib/report";
 import { filterStudents } from "@/lib/studentSearch";
 import { cn, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -65,12 +65,13 @@ export function TutorDeskApp() {
   const [view, setView] = useState<View>("dashboard");
   const [copied, setCopied] = useState(false);
   const [studentQuery, setStudentQuery] = useState("");
+  const [reportTemplate, setReportTemplate] = useState<ReportTemplate>("detailed");
   const studentSearchRef = useRef<HTMLInputElement>(null);
   const store = useTutorDesk();
   const { selectedStudent, scoped } = store;
 
   const report = selectedStudent
-    ? generateProgressReport({ student: selectedStudent, ...scoped })
+    ? generateProgressReport({ student: selectedStudent, ...scoped }, reportTemplate)
     : "";
 
   const mistakeFrequency = useMemo(() => getMistakeFrequency(scoped.mistakes), [scoped.mistakes]);
@@ -228,7 +229,15 @@ export function TutorDeskApp() {
                 {view === "homework" ? <HomeworkPanel studentId={selectedStudent.id} store={store} /> : null}
                 {view === "mistakes" ? <MistakesPanel studentId={selectedStudent.id} store={store} mistakeFrequency={mistakeFrequency} /> : null}
                 {view === "progress" ? <ProgressPanel studentId={selectedStudent.id} store={store} /> : null}
-                {view === "reports" ? <ReportsPanel report={report} copied={copied} onCopy={copyReport} /> : null}
+                {view === "reports" ? (
+                  <ReportsPanel
+                    report={report}
+                    template={reportTemplate}
+                    copied={copied}
+                    onTemplateChange={setReportTemplate}
+                    onCopy={copyReport}
+                  />
+                ) : null}
                 {view === "backup" ? <BackupPanel store={store} /> : null}
               </section>
               <StudentSidebar store={store} students={filteredStudents} studentQuery={studentQuery} />
@@ -702,16 +711,49 @@ function ProgressPanel({ studentId, store }: { studentId: string; store: Store }
   );
 }
 
-function ReportsPanel({ report, copied, onCopy }: { report: string; copied: boolean; onCopy: () => void }) {
+function ReportsPanel({
+  report,
+  template,
+  copied,
+  onTemplateChange,
+  onCopy,
+}: {
+  report: string;
+  template: ReportTemplate;
+  copied: boolean;
+  onTemplateChange: (template: ReportTemplate) => void;
+  onCopy: () => void;
+}) {
   return (
     <Panel title="Reports" description="Generate a clean Markdown progress report from the selected student's local records.">
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="inline-flex w-fit rounded-full border border-stone-200 bg-stone-50 p-1" aria-label="Report template">
+          {(["concise", "detailed"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={template === option}
+              onClick={() => onTemplateChange(option)}
+              className={cn(
+                "rounded-full px-4 py-2 text-sm font-semibold capitalize transition focus:outline-none focus:ring-2 focus:ring-sage-500 focus:ring-offset-2",
+                template === option ? "bg-white text-stone-950 shadow-sm" : "text-stone-500 hover:text-stone-800",
+              )}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
         <Button onClick={onCopy} className="gap-2">
           <CheckCircle2 size={16} />
           {copied ? "Copied" : "Copy Markdown"}
         </Button>
       </div>
-      <pre className="max-h-[520px] overflow-auto rounded-3xl border border-stone-200 bg-stone-950 p-5 text-sm leading-6 text-stone-100">
+      <p className="mb-3 text-sm text-stone-500">
+        {template === "concise"
+          ? "A compact update for messages, lesson follow-ups, or parent check-ins."
+          : "A complete record with lessons, homework, recurring mistakes, and topic progress."}
+      </p>
+      <pre className="max-h-[520px] overflow-auto whitespace-pre-wrap break-words rounded-3xl border border-stone-200 bg-stone-950 p-5 text-sm leading-6 text-stone-100">
         {report}
       </pre>
     </Panel>
