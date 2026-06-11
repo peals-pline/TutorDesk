@@ -16,6 +16,8 @@ type ReportInput = {
   progress: TopicProgress[];
 };
 
+export type ReportTemplate = "concise" | "detailed";
+
 export function getMistakeFrequency(mistakes: Mistake[]) {
   return mistakes.reduce<Record<string, number>>((acc, mistake) => {
     acc[mistake.topic] = (acc[mistake.topic] ?? 0) + 1;
@@ -23,13 +25,32 @@ export function getMistakeFrequency(mistakes: Mistake[]) {
   }, {});
 }
 
-export function generateProgressReport({
-  student,
-  lessons,
-  homework,
-  mistakes,
-  progress,
-}: ReportInput) {
+function generateConciseReport({ student, lessons, homework, progress }: ReportInput) {
+  const latestLesson = lessons.slice().sort((a, b) => b.date.localeCompare(a.date))[0];
+  const homeworkCounts = homework.reduce<Record<string, number>>((counts, item) => {
+    counts[item.status] = (counts[item.status] ?? 0) + 1;
+    return counts;
+  }, {});
+  const homeworkSummary = Object.entries(homeworkCounts)
+    .map(([status, count]) => `${count} ${status}`)
+    .join(", ");
+  const mastered = progress.filter((item) => item.status === "mastered").length;
+  const nextStep = progress.find((item) => item.status === "needs_review")
+    ?? progress.find((item) => item.status === "learning");
+
+  return [
+    `# Progress update: ${student.name}`,
+    "",
+    `**Subject:** ${student.subject} (${student.level})`,
+    `**Goal:** ${student.goals || "No goal recorded yet."}`,
+    `**Recent focus:** ${latestLesson ? `${latestLesson.topic} - ${latestLesson.summary}` : "No lessons recorded yet."}`,
+    `**Homework:** ${homeworkSummary || "No homework recorded yet."}`,
+    `**Progress:** ${mastered} of ${progress.length} tracked topics mastered`,
+    `**Next step:** ${nextStep ? `${nextStep.topic} - ${nextStep.notes || "Continue focused practice."}` : "Maintain the current practice rhythm."}`,
+  ].join("\n");
+}
+
+function generateDetailedReport({ student, lessons, homework, mistakes, progress }: ReportInput) {
   const recentLessons = lessons
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -51,7 +72,7 @@ export function generateProgressReport({
     "## Recent lessons",
     recentLessons.length
       ? recentLessons
-          .map((lesson) => `- **${formatDate(lesson.date)}:** ${lesson.topic} — ${lesson.summary}`)
+          .map((lesson) => `- **${formatDate(lesson.date)}:** ${lesson.topic} - ${lesson.summary}`)
           .join("\n")
       : "- No lessons recorded yet.",
     "",
@@ -69,7 +90,7 @@ export function generateProgressReport({
     "",
     "## Topic progress",
     progress.length
-      ? progress.map((item) => `- **${item.topic}:** ${progressLabels[item.status]} — ${item.notes || "No notes."}`).join("\n")
+      ? progress.map((item) => `- **${item.topic}:** ${progressLabels[item.status]} - ${item.notes || "No notes."}`).join("\n")
       : "- No progress topics recorded yet.",
     "",
     "## Suggested next steps",
@@ -77,4 +98,8 @@ export function generateProgressReport({
       ? nextSteps.map((item) => `- Review ${item.topic}: ${item.notes || "continue practice."}`).join("\n")
       : "- Maintain current practice rhythm and add new target topics after the next lesson.",
   ].join("\n");
+}
+
+export function generateProgressReport(input: ReportInput, template: ReportTemplate = "detailed") {
+  return template === "concise" ? generateConciseReport(input) : generateDetailedReport(input);
 }
